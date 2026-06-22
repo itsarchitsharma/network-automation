@@ -1,0 +1,8 @@
+hostname RTR-EDGE-02
+!
+interface Loopback0
+ ip address 10.255.0.2 255.255.255.255
+!
+router bgp 65001
+ bgp router-id 10.255.0.2
+!
