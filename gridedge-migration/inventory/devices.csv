@@ -1,0 +1,2 @@
+hostname,host,port,username,password,device_type,role,site,legacy_platform,new_platform
+GRIDEDGE-CORE-01,devnetsandboxiosxec8k.cisco.com,22,architsharma08,6G-5W7Z_hsna,cisco_xe,core,sydney,SDH/PDH,MPLS-TP
