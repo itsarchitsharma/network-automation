@@ -1,0 +1,14 @@
+---
+- name: Push loopback config from template
+  cisco.ios.ios_config:
+    src: loopback.j2
+
+- name: Verify loopback was created
+  cisco.ios.ios_command:
+    commands:
+      - show ip interface brief
+  register: output
+
+- name: Print interface output
+  debug:
+    msg: "{{ output.stdout[0] }}"

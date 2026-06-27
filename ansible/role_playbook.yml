@@ -1,0 +1,12 @@
+---
+- name: Deploy loopback using role
+  hosts: cisco_routers
+  gather_facts: no
+
+  roles:
+    - role: loopback_config
+      vars:
+        loopback_id: 202
+        description: "ROLE-OVERRIDE-TEST"
+        loopback_ip: "10.200.0.2"
+        loopback_mask: "255.255.255.255"
