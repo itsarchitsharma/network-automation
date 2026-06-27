@@ -1,0 +1,13 @@
+# State files
+*.tfstate
+*.tfstate.backup
+
+# Provider plugins and modules cache
+.terraform/
+
+# Override files
+override.tf
+override.tf.json
+
+# Local variable files with sensitive data
+*.tfvars
