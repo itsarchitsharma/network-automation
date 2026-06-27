@@ -8,26 +8,27 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-southeast-2"
+  region = var.aws_region
 }
 
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
 
   tags = {
     Name        = "network-automation-vpc"
-    Environment = "lab"
+    Environment = var.environment
     ManagedBy   = "terraform"
   }
 }
 
 resource "aws_subnet" "public" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "ap-southeast-2a"
+  cidr_block        = var.public_subnet_cidr
+  availability_zone = "${var.aws_region}a"
 
   tags = {
-    Name      = "public-subnet"
-    ManagedBy = "terraform"
+    Name        = "public-subnet"
+    Environment = var.environment
+    ManagedBy   = "terraform"
   }
 }
