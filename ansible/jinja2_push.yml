@@ -1,0 +1,21 @@
+---
+- name: Push config from Jinja2 template
+  hosts: cisco_routers
+  gather_facts: no
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Generate and push loopback config
+      cisco.ios.ios_config:
+        src: templates/loopback.j2
+
+    - name: Verify interface was created
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+      register: output
+
+    - name: Print output
+      debug:
+        msg: "{{ output.stdout[0] }}"

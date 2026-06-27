@@ -1,5 +1,5 @@
 ---
-- name: Rollback Loopback200
+- name: Rollback test loopbacks
   hosts: cisco_routers
   gather_facts: no
 
@@ -8,6 +8,13 @@
       cisco.ios.ios_config:
         lines:
           - no interface Loopback200
+      ignore_errors: yes
+
+    - name: Remove Loopback201
+      cisco.ios.ios_config:
+        lines:
+          - no interface Loopback201
+      ignore_errors: yes
 
     - name: Verify rollback
       cisco.ios.ios_command:

@@ -1,0 +1,5 @@
+---
+loopback_id: 201
+description: "ANSIBLE-JINJA2-TEST-2"
+loopback_ip: "10.200.0.2"
+loopback_mask: "255.255.255.255"
