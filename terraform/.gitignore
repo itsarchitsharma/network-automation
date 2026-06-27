@@ -1,6 +1,7 @@
 # State files
 *.tfstate
 *.tfstate.backup
+*.tfstate.*.backup
 
 # Provider plugins and modules cache
 .terraform/
