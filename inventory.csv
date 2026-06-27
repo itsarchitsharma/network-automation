@@ -1,6 +1,2 @@
-hostname,loopback_ip,loopback_mask,bgp_as
-RTR-EDGE-01,10.255.0.1,255.255.255.255,65001
-RTR-EDGE-02,10.255.0.2,255.255.255.255,65001
-RTR-EDGE-03,10.255.0.3,255.255.255.255,65001
-RTR-EDGE-04,10.255.0.4,255.255.255.255,65001
-RTR-EDGE-05,10.255.0.5,255.255.255.255,65001
+hostname,host,port,username,password,device_type
+CAT8K-SANDBOX,devnetsandboxiosxec8k.cisco.com,22,architsharma08,6G-5W7Z_hsna,cisco_xe
