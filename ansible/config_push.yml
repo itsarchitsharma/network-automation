@@ -1,0 +1,32 @@
+---
+- name: Push Loopback Config
+  hosts: cisco_routers
+  gather_facts: no
+
+  tasks:
+    - name: Capture state before change
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+      register: before
+
+    - name: Print before state
+      debug:
+        msg: "{{ before.stdout[0] }}"
+
+    - name: Configure Loopback200
+      cisco.ios.ios_config:
+        lines:
+          - description ANSIBLE-TEST
+          - ip address 10.200.0.1 255.255.255.255
+        parents: interface Loopback200
+
+    - name: Capture state after change
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+      register: after
+
+    - name: Print after state
+      debug:
+        msg: "{{ after.stdout[0] }}"
