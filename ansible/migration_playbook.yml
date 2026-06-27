@@ -1,0 +1,58 @@
+---
+- name: MPLS-TP Migration - PE Router Base Config
+  hosts: pe_routers
+  gather_facts: no
+
+  tasks:
+    - name: Capture pre-migration state
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+          - show ip bgp summary
+      register: pre_migration
+      ignore_errors: yes
+
+    - name: Save pre-migration state to file
+      copy:
+        content: |
+          === PRE-MIGRATION STATE: {{ inventory_hostname }} ===
+
+          --- show ip interface brief ---
+          {{ pre_migration.stdout[0] }}
+
+          --- show ip bgp summary ---
+          {{ pre_migration.stdout[1] }}
+        dest: "../audit/{{ inventory_hostname }}_pre_migration.txt"
+
+    - name: Apply migration config template
+      cisco.ios.ios_config:
+        src: roles/loopback_config/templates/migration.j2
+
+    - name: Capture post-migration state
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+          - show ip bgp summary
+      register: post_migration
+      ignore_errors: yes
+
+    - name: Save post-migration state to file
+      copy:
+        content: |
+          === POST-MIGRATION STATE: {{ inventory_hostname }} ===
+
+          --- show ip interface brief ---
+          {{ post_migration.stdout[0] }}
+
+          --- show ip bgp summary ---
+          {{ post_migration.stdout[1] }}
+        dest: "../audit/{{ inventory_hostname }}_post_migration.txt"
+
+    - name: Migration summary
+      debug:
+        msg:
+          - "Device: {{ inventory_hostname }}"
+          - "Loopback{{ loopback_id }}: {{ loopback_ip }} configured"
+          - "BGP AS: {{ bgp_as }}"
+          - "Pre-migration state saved to audit/{{ inventory_hostname }}_pre_migration.txt"
+          - "Post-migration state saved to audit/{{ inventory_hostname }}_post_migration.txt"

@@ -1,0 +1,7 @@
+---
+loopback_id: 200
+description: "MPLS-TP-MIGRATION"
+loopback_ip: "10.200.0.1"
+loopback_mask: "255.255.255.255"
+bgp_as: "65001"
+router_id: "10.200.0.1"

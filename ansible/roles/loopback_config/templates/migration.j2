@@ -1,0 +1,7 @@
+interface Loopback{{ loopback_id }}
+ description {{ description }}
+ ip address {{ loopback_ip }} {{ loopback_mask }}
+!
+router bgp {{ bgp_as }}
+ bgp router-id {{ router_id }}
+ bgp log-neighbor-changes
