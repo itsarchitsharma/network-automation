@@ -1,0 +1,14 @@
+---
+# GridEdge Energy — GRIDEDGE-CORE-01
+# Site: Sydney
+# Migration: SDH/PDH -> MPLS-TP
+
+loopback_id: 0
+loopback_ip: 10.255.0.1
+loopback_mask: 255.255.255.255
+bgp_as: 65001
+router_id: 10.255.0.1
+site: sydney
+role: core
+legacy_platform: SDH/PDH
+new_platform: MPLS-TP

@@ -1,0 +1,27 @@
+---
+- name: GridEdge Energy — Migration Rollback
+  hosts: core_routers
+  gather_facts: no
+
+  tasks:
+    - name: Remove migration loopback
+      cisco.ios.ios_config:
+        lines:
+          - no interface Loopback{{ loopback_id }}
+      ignore_errors: yes
+
+    - name: Remove BGP config
+      cisco.ios.ios_config:
+        lines:
+          - no router bgp {{ bgp_as }}
+      ignore_errors: yes
+
+    - name: Verify rollback
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+      register: rollback_state
+
+    - name: Print rollback state
+      debug:
+        msg: "{{ rollback_state.stdout[0] }}"

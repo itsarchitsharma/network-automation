@@ -1,0 +1,68 @@
+---
+- name: GridEdge Energy — MPLS-TP Migration
+  hosts: core_routers
+  gather_facts: no
+
+  tasks:
+    - name: Capture pre-migration state
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+          - show ip route
+      register: pre_state
+      ignore_errors: yes
+
+    - name: Save pre-migration state
+      copy:
+        content: |
+          === PRE-MIGRATION STATE: {{ inventory_hostname }} ===
+          Timestamp: {{ ansible_date_time.iso8601 | default('N/A') }}
+
+          --- show ip interface brief ---
+          {{ pre_state.stdout[0] }}
+
+          --- show ip route ---
+          {{ pre_state.stdout[1] }}
+        dest: "../audit/{{ inventory_hostname }}_ansible_pre_migration.txt"
+
+    - name: Push MPLS-TP migration config
+      cisco.ios.ios_config:
+        src: templates/mpls_tp_migration.j2
+
+    - name: Capture post-migration state
+      cisco.ios.ios_command:
+        commands:
+          - show ip interface brief
+          - show ip route
+          - show ip bgp summary
+      register: post_state
+      ignore_errors: yes
+
+    - name: Save post-migration state
+      copy:
+        content: |
+          === POST-MIGRATION STATE: {{ inventory_hostname }} ===
+
+          --- show ip interface brief ---
+          {{ post_state.stdout[0] }}
+
+          --- show ip route ---
+          {{ post_state.stdout[1] }}
+
+          --- show ip bgp summary ---
+          {{ post_state.stdout[2] }}
+        dest: "../audit/{{ inventory_hostname }}_ansible_post_migration.txt"
+
+    - name: Migration summary
+      debug:
+        msg:
+          - "=============================="
+          - "MIGRATION COMPLETE"
+          - "=============================="
+          - "Device    : {{ inventory_hostname }}"
+          - "Site      : {{ site }}"
+          - "Migration : {{ legacy_platform }} -> {{ new_platform }}"
+          - "Loopback  : {{ loopback_ip }}/32"
+          - "BGP AS    : {{ bgp_as }}"
+          - "Router ID : {{ router_id }}"
+          - "=============================="
