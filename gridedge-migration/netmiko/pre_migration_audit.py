@@ -91,12 +91,17 @@ def main():
         print(f"Connecting to {device['hostname']} ({device['host']})...")
 
         try:
+            # Password resolved from environment variable if set
+            # Set DEVICE_PASSWORD env var in GitHub Actions secrets
+            # For local runs password is read directly from CSV
+            password = os.environ.get("DEVICE_PASSWORD") or device["password"]
+
             connection = ConnectHandler(
                 device_type=device["device_type"],
                 host=device["host"],
                 port=int(device["port"]),
                 username=device["username"],
-                password=device["password"],
+                password=password,
             )
 
             print(f"  Connected — running audit commands...")

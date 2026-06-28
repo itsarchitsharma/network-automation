@@ -1,0 +1,107 @@
+# GridEdge Energy — Network Migration CI/CD Pipeline
+# ===================================================
+# Triggers automatically on every push to main.
+# Validates playbook syntax and runs pre-migration audit.
+#
+# SCALING TO PRODUCTION:
+# - Add deployment steps below the validation stage
+# - Add approval gates using GitHub Environments
+# - Add Slack/email notifications for pipeline results
+
+name: GridEdge Migration Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'gridedge-migration/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate automation code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install netmiko ansible
+
+      - name: Validate Ansible playbook syntax
+        working-directory: gridedge-migration/ansible
+        run: |
+          ansible-playbook migration_push.yml \
+            -i hosts.ini \
+            --syntax-check
+
+      - name: Validate rollback playbook syntax
+        working-directory: gridedge-migration/ansible
+        run: |
+          ansible-playbook rollback.yml \
+            -i hosts.ini \
+            --syntax-check
+
+      - name: Validate inventory CSV structure
+        working-directory: gridedge-migration
+        run: |
+          python3 - <<'EOF'
+          import csv
+          required_columns = {
+              'hostname', 'host', 'port', 'username',
+              'password', 'device_type', 'role', 'site',
+              'legacy_platform', 'new_platform'
+          }
+          with open('inventory/devices.csv') as f:
+              reader = csv.DictReader(f)
+              columns = set(reader.fieldnames)
+              missing = required_columns - columns
+              if missing:
+                  print(f"FAILED: Missing columns: {missing}")
+                  exit(1)
+              rows = list(reader)
+              if len(rows) == 0:
+                  print("FAILED: No devices in inventory")
+                  exit(1)
+              print(f"PASSED: Inventory valid — {len(rows)} device(s) found")
+          EOF
+
+  audit:
+    name: Run pre-migration audit
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install netmiko
+
+      - name: Run pre-migration audit
+        working-directory: gridedge-migration
+        env:
+          DEVICE_PASSWORD: ${{ secrets.DEVNET_PASSWORD }}
+        run: |
+          python3 netmiko/pre_migration_audit.py
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pre-migration-audit
+          path: gridedge-migration/audit/
+          retention-days: 30
