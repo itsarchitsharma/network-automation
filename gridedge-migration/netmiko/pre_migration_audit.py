@@ -1,8 +1,21 @@
 #!/usr/bin/env python3
 """
 GridEdge Energy — Pre-Migration Audit
-Captures device state before migration.
-Supports any number of devices via inventory/devices.csv
+======================================
+Captures full device state before migration begins.
+
+SCALING TO PRODUCTION:
+- Add rows to inventory/devices.csv to onboard additional devices
+- This script connects to every device in the CSV automatically
+- No code changes required — only the CSV changes
+
+TESTED AGAINST:
+- Cisco DevNet Cat8kv AlwaysOn Sandbox (IOS-XE 17.15.4c)
+- Compatible with any Netmiko-supported Cisco IOS/IOS-XE device
+
+ADDING NEW AUDIT COMMANDS:
+- Add commands to AUDIT_COMMANDS list below
+- All commands run against every device in the inventory
 """
 
 import csv
@@ -11,7 +24,9 @@ from datetime import datetime
 from netmiko import ConnectHandler
 from netmiko.exceptions import NetmikoTimeoutException, NetmikoAuthenticationException
 
-# Audit commands — same set run against every device
+# ── AUDIT COMMANDS ──────────────────────────────────────────
+# Add or remove commands here to customise the audit scope.
+# All commands run against every device in the inventory.
 AUDIT_COMMANDS = [
     "show version",
     "show ip interface brief",

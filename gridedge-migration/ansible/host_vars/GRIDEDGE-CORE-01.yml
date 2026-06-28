@@ -1,7 +1,13 @@
 ---
-# GridEdge Energy — GRIDEDGE-CORE-01
-# Site: Sydney
-# Migration: SDH/PDH -> MPLS-TP
+# GridEdge Energy — Host Variables for GRIDEDGE-CORE-01
+# ======================================================
+# SCALING TO PRODUCTION:
+# Create one file per device in this directory.
+# Filename must match the hostname in ansible/hosts.ini exactly.
+# Example: GRIDEDGE-EDGE-01.yml, GRIDEDGE-EDGE-02.yml
+#
+# The migration playbook reads these automatically —
+# no playbook changes required when adding new devices.
 
 loopback_id: 0
 loopback_ip: 10.255.0.1
